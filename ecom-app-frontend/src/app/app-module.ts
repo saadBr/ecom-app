@@ -1,17 +1,44 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
-
+import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { Products } from './ui/products/products';
 import { Customers } from './ui/customers/customers';
-import {HttpClientModule, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
-import {CommonModule} from '@angular/common';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  provideKeycloak,
+  includeBearerTokenInterceptor,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+  IncludeBearerTokenCondition
+} from 'keycloak-angular';
+
+const apiCondition = {
+  urlPattern: /^http:\/\/localhost:8089\/api\/.*$/i,
+  bearerPrefix: 'Bearer'
+} as IncludeBearerTokenCondition;
 
 @NgModule({
   declarations: [App, Products, Customers],
-  imports: [BrowserModule, AppRoutingModule, CommonModule],
-  providers: [provideBrowserGlobalErrorListeners(), provideClientHydration(withEventReplay()), provideHttpClient(withInterceptorsFromDi())],
+  imports: [BrowserModule, AppRoutingModule],
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideHttpClient(withInterceptors([includeBearerTokenInterceptor])),
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [apiCondition]
+    },
+    provideKeycloak({
+      config: {
+        url: 'http://localhost:8090',
+        realm: 'saadbr-realm',
+        clientId: 'ecom-client-ang'
+      },
+      initOptions: {
+        onLoad: 'login-required',
+        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
+      }
+    })
+  ],
   bootstrap: [App],
 })
 export class AppModule {}
