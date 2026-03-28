@@ -9,35 +9,37 @@ import {
   provideKeycloak,
   includeBearerTokenInterceptor,
   INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-  IncludeBearerTokenCondition
+  IncludeBearerTokenCondition,
 } from 'keycloak-angular';
+import { Orders } from './ui/orders/orders';
+import { OrderDetails } from './ui/order-details/order-details';
 
 const apiCondition = {
-  urlPattern: /^http:\/\/localhost:8089\/api\/.*$/i,
-  bearerPrefix: 'Bearer'
+  urlPattern: /^http:\/\/localhost:(8089|8091)\/api\/.*$/i,
+  bearerPrefix: 'Bearer',
 } as IncludeBearerTokenCondition;
 
 @NgModule({
-  declarations: [App, Products, Customers],
+  declarations: [App, Products, Customers, Orders, OrderDetails],
   imports: [BrowserModule, AppRoutingModule],
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([includeBearerTokenInterceptor])),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-      useValue: [apiCondition]
+      useValue: [apiCondition],
     },
     provideKeycloak({
       config: {
         url: 'http://localhost:8090',
         realm: 'saadbr-realm',
-        clientId: 'ecom-client-ang'
+        clientId: 'ecom-client-ang',
       },
       initOptions: {
         onLoad: 'login-required',
-        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
-      }
-    })
+        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+      },
+    }),
   ],
   bootstrap: [App],
 })

@@ -1,0 +1,69 @@
+<div class="container py-4">
+  <div class="card shadow-sm border-0 rounded-4" *ngIf="orderDetails">
+    <div class="card-header bg-dark text-white rounded-top-4 py-3">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h4 class="mb-0">Order Details</h4>
+          <small class="text-light opacity-75">Order ID: {{ orderId }}</small>
+        </div>
+        <span class="badge bg-warning text-dark px-3 py-2 fs-6">
+          {{ orderDetails.state }}
+        </span>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="border rounded-3 p-3 h-100 bg-light">
+            <div class="text-muted small mb-1">Order Date</div>
+            <div class="fw-semibold fs-5">{{ orderDetails.date }}</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="border rounded-3 p-3 h-100 bg-light">
+            <div class="text-muted small mb-1">Total Amount</div>
+            <div class="fw-bold fs-4 text-success">
+              {{ getTotal(orderDetails) | number:'0.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Product Name</th>
+            <th class="text-end">Price</th>
+            <th class="text-center">Quantity</th>
+            <th class="text-end">Amount</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let pi of orderDetails.items">
+            <td class="fw-semibold">{{ pi.id }}</td>
+            <td>{{ pi.product.name }}</td>
+            <td class="text-end">{{ pi.price | number:'0.2-2' }}</td>
+            <td class="text-center">
+              <span class="badge bg-secondary">{{ pi.quantity }}</span>
+            </td>
+            <td class="text-end fw-semibold">
+              {{ pi.quantity * pi.price | number:'0.2-2' }}
+            </td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr class="table-light">
+            <th colspan="4" class="text-end fs-5">Total</th>
+            <th class="text-end fs-5 text-success">
+              {{ getTotal(orderDetails) | number:'0.2-2' }}
+            </th>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -29,7 +29,7 @@ public class OrderServiceApplication {
 	@Bean
 	CommandLineRunner commandLineRunner(OrderRepository orderRepository, ProductRepository productRepository, InventoryRestClient inventoryRestClient) {
 		return args -> {
-			List<Product> allProducts = inventoryRestClient.getAllProducts();
+			List<String> productsIds = List.of("P01", "P02", "P03");
 			for (int i = 0; i < 5; i++) {
 				Order order = Order.builder()
 						.id(UUID.randomUUID().toString())
@@ -37,11 +37,11 @@ public class OrderServiceApplication {
 						.state(OrderState.PENDING)
 						.build();
 				orderRepository.save(order);
-				allProducts.forEach(p->{
+				productsIds.forEach(p->{
 					ProductItem productItem = ProductItem.builder()
-							.productId(p.getId().toString())
+							.productId(p)
 							.quantity(new Random().nextInt(10))
-							.price(p.getPrice())
+							.price(Math.random() * 6000 + 100)
 							.order(order)
 							.build();
 					productRepository.save(productItem);
